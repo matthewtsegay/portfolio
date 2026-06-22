@@ -1,7 +1,12 @@
 export const personalInfo = {
   name: "MATYOS TSEGAY KASSA",
+  firstName: "Matyos",
+  lastName: "Tsegay Kassa",
   title: "Software Engineer | Backend & Mobile Developer",
+  roles: ["Software Engineer", "Backend & Mobile Developer"],
+  organization: "Mekelle University",
   location: "Mekelle, Ethiopia",
+  profileImage: "/profile.png",
   email: "matyostsegay@gmail.com", // Placeholder, user should update
   github: "https://github.com/matthewtsegay",
   linkedin: "https://linkedin.com/in/matyos-tsegay",
@@ -167,7 +172,7 @@ export const experience = [
 export const education = {
   school: "Mekelle University",
   degree: "BSc in Software Engineering",
-  cgpa: "3.75",
+  cgpa: "3.7",
   status: "Final-year Student",
   coursework: [
     "Software Architecture",
@@ -183,17 +188,20 @@ export const certifications = [
   {
     title: "Cursor Hackathon Certificate",
     issuer: "Cursor",
-    year: "2024",
+    year: "2025",
+    image: "/certificates/cursor-hackathon.png",
   },
   {
     title: "Mobile & Computer Maintenance Training",
     issuer: "Mekelle University",
     year: "2023",
+    image: "/certificates/maintenance-training.svg",
   },
   {
     title: "Ethiopian AI & Cybersecurity Conference",
     issuer: "EAC",
     year: "2024",
+    image: "/certificates/ai-cybersecurity.svg",
   },
 ];
 

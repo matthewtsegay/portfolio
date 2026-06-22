@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" fill="none">
+  <rect width="400" height="260" rx="8" fill="#F5EDE0"/>
+  <rect x="16" y="16" width="368" height="228" rx="4" stroke="#C4A574" stroke-width="2" stroke-dasharray="8 4"/>
+  <circle cx="200" cy="90" r="36" fill="#D4A574" opacity="0.3"/>
+  <path d="M200 70 L210 95 L185 80 H215 L190 95 Z" fill="#8B6914"/>
+  <text x="200" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#3D2B1F">Cursor Hackathon</text>
+  <text x="200" y="175" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#6B5344">Certificate � 2024</text>
+  <line x1="80" y1="200" x2="320" y2="200" stroke="#C4A574" stroke-width="1"/>
+  <text x="200" y="225" text-anchor="middle" font-family="monospace" font-size="10" fill="#8B7355">CURSOR</text>
+</svg>

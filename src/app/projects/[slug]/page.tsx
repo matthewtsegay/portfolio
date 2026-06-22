@@ -84,7 +84,7 @@ const ProjectDetails = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="aspect-video rounded-3xl bg-muted border border-border overflow-hidden relative group shadow-2xl"
+            className="aspect-video max-h-[220px] md:max-h-[260px] rounded-2xl bg-muted border border-border overflow-hidden relative group shadow-lg"
           >
             <div className="absolute inset-0 flex items-center justify-center bg-primary/5">
               <span className="text-sm font-mono text-muted-foreground">Demo Video Placeholder</span>
@@ -97,9 +97,9 @@ const ProjectDetails = () => {
           <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
             <Layers className="text-primary" /> Visual Overview
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square rounded-2xl bg-card border border-border flex items-center justify-center group overflow-hidden">
+              <div key={i} className="aspect-square max-h-[120px] rounded-xl bg-card border border-border flex items-center justify-center group overflow-hidden">
                 <span className="text-xs font-mono text-muted-foreground group-hover:scale-110 transition-transform">Screenshot {i}</span>
               </div>
             ))}
