@@ -1,50 +1,73 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-accent: var(--accent);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
   --color-border: var(--border);
-  --color-cream: var(--cream);
-  --color-cream-dark: var(--cream-dark);
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
 }
 
+/* Light theme (default) */
 :root {
-  --background: oklch(0.97 0.014 88);
-  --foreground: oklch(0.28 0.03 65);
-  --primary: oklch(0.58 0.11 58);
-  --accent: oklch(0.72 0.1 72);
-  --muted: oklch(0.93 0.016 86);
-  --muted-foreground: oklch(0.48 0.03 65);
-  --card: oklch(0.99 0.01 90);
-  --border: oklch(0.88 0.022 82);
-  --cream: oklch(0.95 0.02 85);
-  --cream-dark: oklch(0.9 0.025 80);
+  --background: #ffffff;
+  --foreground: #09090b;
+  --muted: #71717a;
+  --card: #ffffff;
+  --border: #e4e4e7;
+  --accent: #09090b;
+  --accent-dark: #000000;
+  --surface: #f4f4f5;
+  --border-subtle: #f0f0f0;
+  --inverse-surface: #18181b;
+  --inverse-text: #fafafa;
+
+  /* Footer — always black regardless of theme */
+  --footer-bg: #000000;
+  --footer-text: #ffffff;
+  --footer-muted: #a3a3a3;
+  --footer-border: #262626;
 }
 
-.dark {
-  --background: oklch(0.17 0.022 72);
-  --foreground: oklch(0.93 0.018 85);
-  --primary: oklch(0.74 0.12 68);
-  --accent: oklch(0.8 0.1 78);
-  --muted: oklch(0.24 0.022 72);
-  --muted-foreground: oklch(0.65 0.025 78);
-  --card: oklch(0.21 0.024 72);
-  --border: oklch(0.3 0.022 72);
-  --cream: oklch(0.22 0.028 75);
-  --cream-dark: oklch(0.19 0.025 72);
+/* Dark theme */
+html.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --muted: #a1a1aa;
+  --card: #18181b;
+  --border: #27272a;
+  --accent: #fafafa;
+  --accent-dark: #ffffff;
+  --surface: #27272a;
+  --border-subtle: #27272a;
+  --inverse-surface: #fafafa;
+  --inverse-text: #09090b;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
+html.no-theme-transition,
+html.no-theme-transition *,
+html.no-theme-transition *::before,
+html.no-theme-transition *::after {
+  transition: none !important;
 }
 
 body {
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  transition: background 0.5s ease, color 0.5s ease;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @layer base {
@@ -54,61 +77,142 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  ::selection {
+    background: var(--accent);
+    color: #ffffff;
+  }
+  html.dark ::selection {
+    color: #000000;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
 }
 
-.glass {
-  background: rgba(255, 252, 245, 0.55);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(210, 190, 160, 0.2);
+/* Hero background — subtle geometric grid with diagonals */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 99px,
+      rgba(9, 9, 11, 0.045) 99px,
+      rgba(9, 9, 11, 0.045) 100px
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect width='72' height='72' fill='none'/%3E%3Cline x1='0' y1='0' x2='72' y2='72' stroke='rgba(9,9,11,0.06)' stroke-width='1'/%3E%3Cline x1='72' y1='0' x2='0' y2='72' stroke='rgba(9,9,11,0.06)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='72' y2='0' stroke='rgba(9,9,11,0.05)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='72' stroke='rgba(9,9,11,0.05)' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat: repeat, repeat;
+  background-size: 100px 100px, 72px 72px;
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
 }
 
-.dark .glass {
-  background: rgba(30, 26, 22, 0.55);
-  border: 1px solid rgba(255, 245, 230, 0.08);
+html.dark .bg-grid {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 99px,
+      rgba(255, 255, 255, 0.04) 99px,
+      rgba(255, 255, 255, 0.04) 100px
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect width='72' height='72' fill='none'/%3E%3Cline x1='0' y1='0' x2='72' y2='72' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3Cline x1='72' y1='0' x2='0' y2='72' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='72' y2='0' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='0' y2='72' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3C/svg%3E");
 }
 
-.technical-grid {
-  background-image: radial-gradient(
-    circle at 2px 2px,
-    color-mix(in oklch, var(--border) 60%, transparent) 1px,
-    transparent 0
-  );
-  background-size: 40px 40px;
+/* Accent underline for headline words */
+.accent-underline {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
 }
 
-.about-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--cream) 0%,
-    var(--background) 45%,
-    color-mix(in oklch, var(--primary) 6%, var(--background)) 100%
-  );
+.accent-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 0.12em;
+  background: var(--accent);
 }
 
-.about-orb {
-  filter: blur(80px);
-  opacity: 0.45;
+/* Accent underline that travels across the hero name words */
+@keyframes name-underline {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  5% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  26% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  32% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
 }
 
-.dark .about-orb {
-  opacity: 0.25;
+.name-underline {
+  position: absolute;
+  left: 0;
+  bottom: 0.02em;
+  width: 100%;
+  height: 0.08em;
+  background: var(--muted);
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+  animation: name-underline 9s ease-in-out infinite;
 }
 
-.section-shell {
-  border-radius: 1.75rem;
-  border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
-  background: color-mix(in oklch, var(--card) 60%, transparent);
-  box-shadow: 0 8px 32px color-mix(in oklch, var(--primary) 6%, transparent);
+.name-underline--rest {
+  transform: scaleX(1);
+  opacity: 1;
 }
 
-@media (min-width: 768px) {
-  .section-shell {
-    border-radius: 2.25rem;
+/* Theme toggle icon animation */
+@keyframes spin-in {
+  from { transform: rotate(-90deg); scale: 0.6; opacity: 0; }
+  to { transform: rotate(0deg); scale: 1; opacity: 1; }
+}
+
+.theme-icon-animate {
+  animation: spin-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name-underline {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -116,10 +220,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted);
+  background: #d4d4d8;
   border-radius: 10px;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  background: var(--muted);
 }

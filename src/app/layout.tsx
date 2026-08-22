@@ -1,17 +1,47 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { MotionConfig } from "framer-motion";
+import ThemeProvider from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
   title: "Matyos Tsegay Kassa | Software Engineer",
-  description: "Portfolio of Matyos Tsegay Kassa, a Backend & Mobile Developer specialized in scalable systems and AI-powered solutions.",
+  description:
+    "Portfolio of Matyos Tsegay Kassa, a Software Engineer focused on backend engineering, cross-platform mobile applications, and intelligent software solutions.",
+  keywords: [
+    "Matyos Tsegay Kassa",
+    "Backend Engineer",
+    "AI Engineer",
+    "Software Engineer",
+    "Django",
+    "FastAPI",
+    "Flutter",
+    "Addis Ababa",
+  ],
+  authors: [{ name: "Matyos Tsegay Kassa" }],
+  openGraph: {
+    title: "Matyos Tsegay Kassa | Software Engineer",
+    description:
+      "Portfolio of Matyos Tsegay Kassa, a Software Engineer focused on backend engineering, cross-platform mobile applications, and intelligent software solutions.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Matyos Tsegay Kassa",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Matyos Tsegay Kassa | Software Engineer",
+    description:
+      "Portfolio of Matyos Tsegay Kassa, a Software Engineer focused on backend engineering, cross-platform mobile applications, and intelligent software solutions.",
+  },
 };
+
+const themeScript = `
+(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -20,18 +50,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${mono.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="relative min-h-screen flex flex-col">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={`${inter.variable} ${mono.variable} font-sans`}>
+        <ThemeProvider>
+          <MotionConfig reducedMotion="user">
             <Navbar />
-            <main className="flex-grow">{children}</main>
+            <main>{children}</main>
             <Footer />
-          </div>
+          </MotionConfig>
         </ThemeProvider>
       </body>
     </html>
