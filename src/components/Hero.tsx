@@ -62,7 +62,7 @@ export default function Hero() {
           {...fadeUp(0.44)}
           className="mt-12 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <Button variant="primary" asAnchor href="#contact" className="group">
+          <Button variant="primary" asAnchor href="/contact" className="group">
             Contact Me
             <ArrowRight
               size={16}

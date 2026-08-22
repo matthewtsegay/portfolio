@@ -3,16 +3,20 @@
 import React, { useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import MenuIcon from "@/components/MenuIcon";
+import { scrollToSection, scrollToTop } from "@/lib/scroll";
 
 interface MenuOverlayProps {
   open: boolean;
   onClose: () => void;
-  links: { name: string; href: string }[];
+  links: { name: string; href: string; section?: string }[];
 }
 
 export default function MenuOverlay({ open, onClose, links }: MenuOverlayProps) {
+  const pathname = usePathname();
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -27,12 +31,19 @@ export default function MenuOverlay({ open, onClose, links }: MenuOverlayProps) 
     }
   }, [open, handleKeyDown]);
 
-  const handleLinkClick = (href: string) => {
+  const handleLinkClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    section?: string
+  ) => {
     onClose();
-    const id = href.replace("#", "");
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    if (pathname === href) {
+      e.preventDefault();
+      if (section) {
+        scrollToSection(section);
+      } else {
+        scrollToTop("smooth");
+      }
     }
   };
 
@@ -50,9 +61,9 @@ export default function MenuOverlay({ open, onClose, links }: MenuOverlayProps) 
           {/* ── Mobile header ──────────────────────── */}
           <div className="flex h-[100px] shrink-0 items-center justify-between border-b border-border px-8">
             <Link
-              href="#home"
+              href="/"
               aria-label="Matyos — home"
-              onClick={onClose}
+              onClick={(e) => handleLinkClick(e, "/")}
               className="group inline-flex items-center gap-2.5"
             >
               <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border-2 border-foreground text-sm font-extrabold tracking-tight text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background">
@@ -91,7 +102,7 @@ export default function MenuOverlay({ open, onClose, links }: MenuOverlayProps) 
               >
                 <Link
                   href={link.href}
-                  onClick={() => handleLinkClick(link.href)}
+                  onClick={(e) => handleLinkClick(e, link.href, link.section)}
                   className="block font-normal text-foreground transition-colors duration-200 hover:text-muted"
                   style={{ fontSize: "clamp(20px, 5vw, 24px)", lineHeight: 1.2 }}
                 >

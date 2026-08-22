@@ -39,7 +39,10 @@ if (typeof window !== "undefined") {
   }
 }
 
+const listeners = new Set<() => void>();
+
 function subscribe(callback: () => void) {
+  listeners.add(callback);
   const handler = (e: MediaQueryListEvent) => {
     if (!localStorage.getItem("theme")) {
       currentTheme = e.matches ? "dark" : "light";
@@ -49,8 +52,15 @@ function subscribe(callback: () => void) {
   };
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", handler);
   return () => {
+    listeners.delete(callback);
     window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", handler);
   };
+}
+
+function notifyListeners() {
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function getSnapshot(): Theme {
@@ -65,6 +75,7 @@ function setThemeValue(next: Theme) {
   currentTheme = next;
   localStorage.setItem("theme", next);
   applyThemeToDOM(next);
+  notifyListeners();
 }
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {

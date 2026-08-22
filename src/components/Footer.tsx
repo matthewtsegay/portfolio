@@ -7,10 +7,10 @@ import Link from "next/link";
 import { personalInfo } from "@/data/personal";
 
 const navLinks = [
-  { name: "About", href: "#about" },
-  { name: "Projects", href: "#work" },
-  { name: "Experience", href: "#experience" },
-  { name: "Contact", href: "#contact" },
+  { name: "About", href: "/about" },
+  { name: "Projects", href: "/work" },
+  { name: "Experience", href: "/education" },
+  { name: "Contact", href: "/contact" },
 ];
 
 const connectLinks = [
@@ -59,8 +59,8 @@ export default function Footer() {
             Have an idea, a technical challenge, or an opportunity in mind? I&apos;m
             always open to connecting and building thoughtful software solutions.
           </p>
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="group mt-8 inline-flex items-center gap-2 rounded-full border px-8 py-3.5 text-[15px] font-bold transition-colors duration-300"
             style={{
               borderColor: "var(--f-text)",
@@ -81,7 +81,7 @@ export default function Footer() {
               size={16}
               className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
-          </a>
+          </Link>
         </motion.div>
 
         {/* Divider */}

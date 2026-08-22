@@ -11,6 +11,7 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-dark: var(--accent-dark);
+  --color-error: var(--error);
 }
 
 /* Light theme (default) */
@@ -26,6 +27,7 @@
   --border-subtle: #f0f0f0;
   --inverse-surface: #18181b;
   --inverse-text: #fafafa;
+  --error: #dc2626;
 
   /* Footer — always black regardless of theme */
   --footer-bg: #000000;
@@ -47,6 +49,7 @@ html.dark {
   --border-subtle: #27272a;
   --inverse-surface: #fafafa;
   --inverse-text: #09090b;
+  --error: #f87171;
 }
 
 html {

@@ -1,10 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Github, Linkedin, ArrowUpRight } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Github,
+  Linkedin,
+  ArrowUpRight,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { personalInfo } from "@/data/personal";
 import { SectionLabel } from "@/components/SectionLabel";
+import { cn } from "@/lib/utils";
+import { LIMITS, validateContactFields, type ContactFieldErrors } from "@/lib/validation";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -40,19 +50,102 @@ const contactItems = [
   },
 ];
 
-function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const name = data.get("name") as string;
-  const email = data.get("email") as string;
-  const subject = data.get("subject") as string;
-  const message = data.get("message") as string;
+type FormStatus = "idle" | "sending" | "sent" | "fallback" | "error";
 
-  const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0A${encodeURIComponent(message)}`;
-  window.location.href = `mailto:${personalInfo.email}?subject=${encodeURIComponent(subject)}&body=${body}`;
+function openMailto(data: { name: string; email: string; subject: string; message: string }) {
+  const body = `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`;
+  window.location.href = `mailto:${personalInfo.email}?subject=${encodeURIComponent(
+    data.subject
+  )}&body=${encodeURIComponent(body)}`;
 }
 
+const inputClasses = (hasError: boolean) =>
+  cn(
+    "h-12 rounded-xl border bg-surface px-4 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-muted/60 focus:border-foreground focus:ring-1 focus:ring-foreground/20",
+    hasError && "border-error focus:border-error focus:ring-error/30"
+  );
+
 export default function Contact() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [errors, setErrors] = useState<ContactFieldErrors>({});
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const clearFieldError = (field: keyof ContactFieldErrors) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (status === "sending") return;
+
+    const formData = new FormData(event.currentTarget);
+    const raw = Object.fromEntries(formData) as Record<string, unknown>;
+
+    const result = validateContactFields(raw);
+    if (!result.valid) {
+      setErrors(result.errors);
+      setFormError(null);
+      setStatus("idle");
+      return;
+    }
+
+    setErrors({});
+    setFormError(null);
+    setStatus("sending");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...result.data, website: String(raw.website ?? "") }),
+      });
+
+      let payload: { ok?: boolean; delivered?: boolean; errors?: ContactFieldErrors; error?: string } | null =
+        null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      if (response.status === 429) {
+        setFormError("You're sending messages too quickly. Please wait a few minutes and try again.");
+        setStatus("error");
+        return;
+      }
+
+      if (response.ok && payload?.ok) {
+        if (payload.delivered) {
+          setStatus("sent");
+          formRef.current?.reset();
+        } else {
+          openMailto(result.data);
+          setStatus("fallback");
+          formRef.current?.reset();
+        }
+        return;
+      }
+
+      if (response.status === 400 && payload?.errors) {
+        setErrors(payload.errors);
+        setStatus("idle");
+        return;
+      }
+
+      setFormError(payload?.error ?? "Something went wrong. Please try again later.");
+      setStatus("error");
+    } catch {
+      setFormError("Network error. You can also email me directly.");
+      setStatus("error");
+    }
+  }
+
   return (
     <section id="contact" className="bg-background">
       <div className="mx-auto max-w-[1200px] px-6 pt-24 pb-28 sm:px-10 md:px-[100px] md:pt-32 md:pb-36">
@@ -131,7 +224,9 @@ export default function Contact() {
           {/* Right: Contact Form */}
           <motion.div {...fadeUp(0.28)}>
             <form
+              ref={formRef}
               onSubmit={handleSubmit}
+              noValidate
               className="rounded-2xl border border-border p-6 sm:p-8"
             >
               <div className="grid gap-4 sm:grid-cols-2">
@@ -146,10 +241,20 @@ export default function Contact() {
                     id="contact-name"
                     name="name"
                     type="text"
+                    autoComplete="name"
                     required
+                    maxLength={LIMITS.name.max}
                     placeholder="Your name"
-                    className="h-12 rounded-xl border border-border bg-surface px-4 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-muted/60 focus:border-foreground focus:ring-1 focus:ring-foreground/20"
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? "contact-name-error" : undefined}
+                    onChange={() => clearFieldError("name")}
+                    className={inputClasses(Boolean(errors.name))}
                   />
+                  {errors.name && (
+                    <p id="contact-name-error" role="alert" className="text-xs font-medium text-error">
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label
@@ -162,10 +267,20 @@ export default function Contact() {
                     id="contact-email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     required
+                    maxLength={LIMITS.email.max}
                     placeholder="your@email.com"
-                    className="h-12 rounded-xl border border-border bg-surface px-4 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-muted/60 focus:border-foreground focus:ring-1 focus:ring-foreground/20"
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? "contact-email-error" : undefined}
+                    onChange={() => clearFieldError("email")}
+                    className={inputClasses(Boolean(errors.email))}
                   />
+                  {errors.email && (
+                    <p id="contact-email-error" role="alert" className="text-xs font-medium text-error">
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -181,9 +296,18 @@ export default function Contact() {
                   name="subject"
                   type="text"
                   required
+                  maxLength={LIMITS.subject.max}
                   placeholder="What is this about?"
-                  className="h-12 rounded-xl border border-border bg-surface px-4 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-muted/60 focus:border-foreground focus:ring-1 focus:ring-foreground/20"
+                  aria-invalid={Boolean(errors.subject)}
+                  aria-describedby={errors.subject ? "contact-subject-error" : undefined}
+                  onChange={() => clearFieldError("subject")}
+                  className={inputClasses(Boolean(errors.subject))}
                 />
+                {errors.subject && (
+                  <p id="contact-subject-error" role="alert" className="text-xs font-medium text-error">
+                    {errors.subject}
+                  </p>
+                )}
               </div>
 
               <div className="mt-4 flex flex-col gap-1.5">
@@ -198,21 +322,78 @@ export default function Contact() {
                   name="message"
                   required
                   rows={5}
+                  maxLength={LIMITS.message.max}
                   placeholder="Tell me about your project..."
-                  className="min-h-[140px] resize-y rounded-xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground outline-none transition-colors duration-200 placeholder:text-muted/60 focus:border-foreground focus:ring-1 focus:ring-foreground/20"
+                  aria-invalid={Boolean(errors.message)}
+                  aria-describedby={errors.message ? "contact-message-error" : undefined}
+                  onChange={() => clearFieldError("message")}
+                  className={cn(inputClasses(Boolean(errors.message)), "min-h-[140px] resize-y py-3 leading-relaxed")}
+                />
+                {errors.message && (
+                  <p id="contact-message-error" role="alert" className="text-xs font-medium text-error">
+                    {errors.message}
+                  </p>
+                )}
+              </div>
+
+              <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
                 />
               </div>
 
               <button
                 type="submit"
-                className="group mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-background text-sm font-bold transition-colors duration-300 hover:bg-foreground/80"
+                disabled={status === "sending"}
+                className="group mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-background text-sm font-bold transition-colors duration-300 hover:bg-foreground/80 disabled:pointer-events-none disabled:opacity-60"
               >
-                Send Message
+                {status === "sending" ? "Sending..." : "Send Message"}
                 <ArrowUpRight
                   size={16}
                   className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </button>
+
+              {status === "sent" && (
+                <p
+                  role="status"
+                  className="mt-4 flex items-start gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground"
+                >
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                  Thanks! Your message has been sent. I&apos;ll get back to you soon.
+                </p>
+              )}
+
+              {status === "fallback" && (
+                <p
+                  role="status"
+                  className="mt-4 flex items-start gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground"
+                >
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                  <span>
+                    Opening your email app... If nothing happens,{" "}
+                    <a href={`mailto:${personalInfo.email}`} className="underline underline-offset-2">
+                      email me directly
+                    </a>
+                    .
+                  </span>
+                </p>
+              )}
+
+              {status === "error" && formError && (
+                <p
+                  role="alert"
+                  className="mt-4 flex items-start gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-sm font-medium text-error"
+                >
+                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                  {formError}
+                </p>
+              )}
             </form>
           </motion.div>
         </div>

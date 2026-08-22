@@ -3,22 +3,28 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import MenuIcon from "@/components/MenuIcon";
 import MenuOverlay from "@/components/MenuOverlay";
 import { cn } from "@/lib/utils";
+import { SECTIONS, type SectionKey } from "@/lib/sections";
+import { scrollToSection, scrollToTop } from "@/lib/scroll";
 
-const navLinks = [
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#work" },
-  { name: "Education", href: "#education" },
-  { name: "Contact", href: "#contact" },
+const navLinks: { name: string; href: string; section: SectionKey }[] = [
+  { name: "About", href: "/about", section: "about" },
+  { name: "Skills", href: "/skills", section: "skills" },
+  { name: "Projects", href: "/work", section: "work" },
+  { name: "Education", href: "/education", section: "education" },
+  { name: "Contact", href: "/contact", section: "contact" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("About");
+  const pathname = usePathname();
+  const [active, setActive] = useState(
+    () => navLinks.find((link) => link.href === pathname)?.name ?? "About"
+  );
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -59,8 +65,14 @@ export default function Navbar() {
         <nav className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-6 sm:px-10 md:h-20 md:px-[100px]">
           {/* ── Logo ─────────────────────────────────── */}
           <Link
-            href="#home"
+            href="/"
             aria-label="Matyos — home"
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                scrollToTop("smooth");
+              }
+            }}
             className="group inline-flex items-center gap-2.5"
           >
             <span className="logo-mark inline-flex h-9 w-9 items-center justify-center rounded-md border-2 border-foreground text-sm font-extrabold tracking-tight text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background">
@@ -77,6 +89,12 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
+                onClick={(e) => {
+                  if (pathname === link.href) {
+                    e.preventDefault();
+                    scrollToSection(SECTIONS[link.section].id);
+                  }
+                }}
                 className={cn(
                   "relative whitespace-nowrap font-semibold tracking-tight transition-colors duration-300",
                   active === link.name ? "text-foreground" : "text-foreground/55 hover:text-foreground"
@@ -137,7 +155,6 @@ export default function Navbar() {
       </header>
 
       {/* ── Mobile overlay — rendered outside header to escape sticky stacking context ── */}
-      <MenuOverlay open={open} onClose={() => setOpen(false)} links={navLinks} />
-    </>
+      <MenuOverlay open={open} onClose={() => setOpen(false)} links={navLinks} />    </>
   );
 }

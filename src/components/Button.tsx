@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary";
@@ -36,6 +37,17 @@ export default function Button({
   const classes = cn(base, variantStyles[variant], className);
 
   if (asAnchor && href) {
+    if (href.startsWith("/")) {
+      return (
+        <Link
+          href={href}
+          className={classes}
+          {...(props as Omit<React.ComponentProps<typeof Link>, "href">)}
+        >
+          {children}
+        </Link>
+      );
+    }
     return (
       <a href={href} className={classes} {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
         {children}
