@@ -87,7 +87,7 @@ export const projects: Project[] = [
     category: "AI / EDTECH",
     image: "/images/smart-learning.png",
     github: "https://github.com/5TH-SOFTWARE-ENGINEERING/AI-supported-smart-way-of-teaching-kids",
-    caseStudy: "https://drive.google.com/drive/u/0/folders/16c5gVwBZ_FR5GGNXrOPjCluJAZj6NLHL",
+    caseStudy: "https://drive.google.com/file/d/1beMj8sZrjqbTT7uaK7Mg58XIe4P14ag0/view?usp=drive_link",
     caseStudyLabel: "View Documentation",
     problem:
       "Early education is often delivered using one-size-fits-all materials, even though children learn at different speeds and have different learning needs.",
