@@ -84,7 +84,7 @@ export default function Navbar() {
           </Link>
 
           {/* ── Desktop navigation ───────────────────── */}
-          <div className="hidden items-center gap-6 xl:flex" style={{ gap: "clamp(16px, 2vw, 36px)" }}>
+          <div className="hidden items-center gap-6 lg:flex" style={{ gap: "clamp(16px, 2vw, 36px)" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -95,6 +95,7 @@ export default function Navbar() {
                     scrollToSection(SECTIONS[link.section].id);
                   }
                 }}
+                aria-current={active === link.name ? "page" : undefined}
                 className={cn(
                   "relative whitespace-nowrap font-semibold tracking-tight transition-colors duration-300",
                   active === link.name ? "text-foreground" : "text-foreground/55 hover:text-foreground"
@@ -115,7 +116,7 @@ export default function Navbar() {
           </div>
 
           {/* ── Mobile controls ──────────────────────── */}
-          <div className="flex items-center gap-4 xl:hidden">
+          <div className="flex items-center gap-4 lg:hidden">
             <ThemeToggle />
             <button
               type="button"

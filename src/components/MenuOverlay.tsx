@@ -55,7 +55,7 @@ export default function MenuOverlay({ open, onClose, links }: MenuOverlayProps) 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[9999] flex flex-col bg-background xl:hidden"
+          className="fixed inset-0 z-[9999] flex flex-col bg-background lg:hidden"
           style={{ top: 0 }}
         >
           {/* ── Mobile header ──────────────────────── */}
