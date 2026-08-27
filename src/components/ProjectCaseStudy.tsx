@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Github, ExternalLink, Play, FileText, ArrowUpRight } from "lucide-react";
+import { Github, ExternalLink, Play, FileText, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/data/projects";
 
 const SCREENSHOT_LABELS: Record<string, string[]> = {
@@ -43,6 +43,26 @@ function ScreenshotGallery({
             }`}
           />
         ))}
+
+        <button
+          type="button"
+          onClick={() =>
+            setActiveIndex((i) => (i - 1 + screenshots.length) % screenshots.length)
+          }
+          aria-label="Previous screenshot"
+          className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
+        >
+          <ChevronLeft size={20} strokeWidth={1.5} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveIndex((i) => (i + 1) % screenshots.length)}
+          aria-label="Next screenshot"
+          className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
+        >
+          <ChevronRight size={20} strokeWidth={1.5} />
+        </button>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
