@@ -30,39 +30,41 @@ function ScreenshotGallery({
 
   return (
     <>
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-surface">
-        {screenshots.map((src, i) => (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            key={src}
-            src={src}
-            alt={i === activeIndex ? altFor(i) : ""}
-            loading={i === 0 ? "eager" : "lazy"}
-            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ease-out ${
-              i === activeIndex ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+      <div className="rounded-2xl border border-border bg-surface p-2 sm:p-3">
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl">
+          {screenshots.map((src, i) => (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              key={src}
+              src={src}
+              alt={i === activeIndex ? altFor(i) : ""}
+              loading={i === 0 ? "eager" : "lazy"}
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ease-out ${
+                i === activeIndex ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
 
-        <button
-          type="button"
-          onClick={() =>
-            setActiveIndex((i) => (i - 1 + screenshots.length) % screenshots.length)
-          }
-          aria-label="Previous screenshot"
-          className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
-        >
-          <ChevronLeft size={20} strokeWidth={1.5} />
-        </button>
+          <button
+            type="button"
+            onClick={() =>
+              setActiveIndex((i) => (i - 1 + screenshots.length) % screenshots.length)
+            }
+            aria-label="Previous screenshot"
+            className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
+          >
+            <ChevronLeft size={20} strokeWidth={1.5} />
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveIndex((i) => (i + 1) % screenshots.length)}
-          aria-label="Next screenshot"
-          className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
-        >
-          <ChevronRight size={20} strokeWidth={1.5} />
-        </button>
+          <button
+            type="button"
+            onClick={() => setActiveIndex((i) => (i + 1) % screenshots.length)}
+            aria-label="Next screenshot"
+            className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground backdrop-blur-md transition-opacity duration-300 hover:opacity-70"
+          >
+            <ChevronRight size={20} strokeWidth={1.5} />
+          </button>
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
@@ -73,7 +75,7 @@ function ScreenshotGallery({
             onClick={() => setActiveIndex(i)}
             aria-label={altFor(i)}
             aria-pressed={i === activeIndex}
-            className={`relative aspect-[16/10] w-full min-w-0 overflow-hidden rounded-lg bg-surface transition-all duration-300 ${
+            className={`relative aspect-[16/10] w-full min-w-0 overflow-hidden rounded-lg border border-border bg-surface transition-all duration-300 ${
               i === activeIndex
                 ? "ring-2 ring-border ring-offset-1 ring-offset-background"
                 : "opacity-60 hover:opacity-100"
