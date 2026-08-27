@@ -1,9 +1,72 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Github, ExternalLink, Play, Images, FileText, ArrowUpRight } from "lucide-react";
+import { Github, ExternalLink, Play, FileText, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/projects";
+
+const SCREENSHOT_LABELS: Record<string, string[]> = {
+  "nubu-store": [
+    "homepage and hero section",
+    "featured products section",
+    "product details page",
+    "shopping cart page",
+    "quick search modal",
+    "category section",
+  ],
+};
+
+function ScreenshotGallery({
+  project,
+  screenshots,
+}: {
+  project: Project;
+  screenshots: string[];
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const labels = SCREENSHOT_LABELS[project.slug];
+  const altFor = (i: number) =>
+    `${project.title} — ${(labels && labels[i]) || `screenshot ${i + 1}`}`;
+
+  return (
+    <>
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-surface">
+        {screenshots.map((src, i) => (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            key={src}
+            src={src}
+            alt={i === activeIndex ? altFor(i) : ""}
+            loading={i === 0 ? "eager" : "lazy"}
+            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ease-out ${
+              i === activeIndex ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
+        {screenshots.map((src, i) => (
+          <button
+            key={src}
+            type="button"
+            onClick={() => setActiveIndex(i)}
+            aria-label={altFor(i)}
+            aria-pressed={i === activeIndex}
+            className={`relative aspect-[16/10] w-full min-w-0 overflow-hidden rounded-lg bg-surface transition-all duration-300 ${
+              i === activeIndex
+                ? "ring-2 ring-border ring-offset-1 ring-offset-background"
+                : "opacity-60 hover:opacity-100"
+            }`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt="" loading="lazy" className="h-full w-full object-contain" />
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
 
 interface ProjectCaseStudyProps {
   project: Project;
@@ -38,18 +101,13 @@ function ProjectLink({
 export default function ProjectCaseStudy({ project }: ProjectCaseStudyProps) {
   const hasVideo = Boolean(project.video);
   const isNubu = project.slug === "nubu-store";
+  const hasScreenshots = Boolean(project.screenshots && project.screenshots.length > 0);
 
   const mediaLinks = isNubu
     ? [
         project.live && { href: project.live, icon: ExternalLink, label: "Live Demo" },
         project.github && { href: project.github, icon: Github, label: "GitHub" },
         project.video && { href: project.video, icon: Play, label: "Video" },
-        project.screenshots &&
-          project.screenshots.length > 0 && {
-            href: project.screenshots[0],
-            icon: Images,
-            label: "Screenshots",
-          },
       ].filter(Boolean) as { href: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }>; label: string }[]
     : [
         project.github && {
@@ -72,44 +130,48 @@ export default function ProjectCaseStudy({ project }: ProjectCaseStudyProps) {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="relative w-full"
     >
-      <div className="group relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-surface">
-        {hasVideo ? (
-          <>
-            <video
-              src={project.video}
-              poster={project.image}
-              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-              muted
-              playsInline
-              preload="metadata"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity duration-300 group-hover:bg-black/30">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <Play size={24} className="ml-1" fill="currentColor" />
+      {hasScreenshots ? (
+        <ScreenshotGallery project={project} screenshots={project.screenshots ?? []} />
+      ) : (
+        <div className="group relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-surface">
+          {hasVideo ? (
+            <>
+              <video
+                src={project.video}
+                poster={project.image}
+                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                muted
+                playsInline
+                preload="metadata"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity duration-300 group-hover:bg-black/30">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
+                  <Play size={24} className="ml-1" fill="currentColor" />
+                </div>
               </div>
-            </div>
-          </>
-        ) : (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={project.image}
-            alt={project.title}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-            onError={(e) => {
-              const target = e.currentTarget;
-              target.style.display = "none";
-              const parent = target.parentElement;
-              if (parent && !parent.querySelector(".project-placeholder")) {
-                const fallback = document.createElement("div");
-                fallback.className =
-                  "project-placeholder absolute inset-0 flex flex-col items-center justify-center bg-surface";
-                fallback.innerHTML = `<span class="font-mono text-[11px] uppercase tracking-[0.25em] text-muted mb-3">${project.category}</span><span class="text-[clamp(48px,8vw,80px)] font-extrabold tracking-tight text-border select-none">${project.number}</span>`;
-                parent.appendChild(fallback);
-              }
-            }}
-          />
-        )}
-      </div>
+            </>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={project.image}
+              alt={project.title}
+              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = "none";
+                const parent = target.parentElement;
+                if (parent && !parent.querySelector(".project-placeholder")) {
+                  const fallback = document.createElement("div");
+                  fallback.className =
+                    "project-placeholder absolute inset-0 flex flex-col items-center justify-center bg-surface";
+                  fallback.innerHTML = `<span class="font-mono text-[11px] uppercase tracking-[0.25em] text-muted mb-3">${project.category}</span><span class="text-[clamp(48px,8vw,80px)] font-extrabold tracking-tight text-border select-none">${project.number}</span>`;
+                  parent.appendChild(fallback);
+                }
+              }}
+            />
+          )}
+        </div>
+      )}
 
       {mediaLinks.length > 0 && (
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">

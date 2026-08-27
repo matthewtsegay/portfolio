@@ -31,9 +31,17 @@ export const projects: Project[] = [
     title: "Nubu-Store",
     subtitle: "Modular E-Commerce Ecosystem",
     category: "E-COMMERCE",
-    image: "/images/nubu-store.png",
+    image: "/images/photo_3_2026-08-26_19-56-17.jpg",
     github: "https://github.com/matthewtsegay/E-commerce",
-    live: "https://ecommerce-platform-nebustore.vercel.app/",
+    live: "https://nebu-store.vercel.app/",
+    screenshots: [
+      "/images/photo_3_2026-08-26_19-56-17.jpg",
+      "/images/photo_4_2026-08-26_19-56-17.jpg",
+      "/images/photo_2_2026-08-26_19-56-17.jpg",
+      "/images/photo_1_2026-08-26_19-56-17.jpg",
+      "/images/photo_5_2026-08-26_19-56-17.jpg",
+      "/images/photo_6_2026-08-26_19-56-17.jpg",
+    ],
     problem:
       "Modern e-commerce systems can suffer from monolithic bloat, where changing one feature introduces risk across the system. This leads to slower deployments, difficult maintenance, and inefficient background processing.",
     approach:
