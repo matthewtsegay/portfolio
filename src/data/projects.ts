@@ -94,7 +94,7 @@ export const projects: Project[] = [
     subtitle: "Adaptive Learning & Personalized Education Platform",
     category: "AI / EDTECH",
     image: "/images/smart-learning.png",
-    github: "https://github.com/5TH-SOFTWARE-ENGINEERING/AI-supported-smart-way-of-teaching-kids",
+    github: "https://github.com/AI-supported-smart-way-of-teaching-kids/Backend",
     caseStudy: "https://drive.google.com/file/d/1beMj8sZrjqbTT7uaK7Mg58XIe4P14ag0/view?usp=drive_link",
     caseStudyLabel: "View Documentation",
     problem:
